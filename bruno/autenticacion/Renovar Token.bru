@@ -1,0 +1,21 @@
+meta {
+  name: Renovar Token
+  type: http
+  seq: 3
+}
+
+get {
+  url: http://localhost:3000/api/auth/renew-token
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2YWY0YWEyMWM4NjAzYjQyZDg1ZGVlOTgiLCJuYW1lIjoiU2FtdWVsIiwiZW1haWwiOiJzYW11ZWxAY29ycmVvLmNvIiwicm9sZSI6IkNMSUVOVEUiLCJpYXQiOjE3OTQ0MTkzMDIsImV4cCI6MTc5NDQyMjkwMn0.Th6TmR2UfLNk3XTxfW20X8vJ-VbUXMVsqRSYYCZe2V8
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+  forwardAuthorizationHeader: false
+}

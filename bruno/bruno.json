@@ -1,0 +1,10 @@
+{
+    "version": "1.0.0",
+    "name": "Dotaciones FortunaIJ",
+    "type": "collection",
+    "ignore": [
+        "node_modules",
+        ".git",
+        ".env"
+    ]
+}

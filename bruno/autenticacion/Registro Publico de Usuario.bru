@@ -1,0 +1,27 @@
+meta {
+  name: Registro Publico de Usuario
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:3000/api/auth/register
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "Samuel",
+    "email": "samuel@correo.co",
+    "password": "Uno23#56789",
+    "role": "GERENTE_GENERAL"
+    //"status": false 
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+  forwardAuthorizationHeader: false
+}
