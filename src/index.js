@@ -28,7 +28,7 @@ app.get( '/health', ( req, res ) => {
 // ── Rutas ──
 app.use( '/api/auth', authRoute );
 // Cada integrante agrega aquí las rutas de su módulo, en su rama:
-// app.use( '/api/users', usersRoute );          // Gestión de Usuarios
+
 // app.use( '/api/products', productsRoute );    // Administración de Inventario
 // app.use( '/api/orders', ordersRoute );        // Gestión de Pedidos
 // app.use( '/api/pqrs', pqrsRoute );            // Gestión de PQRS
@@ -39,14 +39,14 @@ app.use( '/api/auth', authRoute );
 // });
 
 // Manejo de errores no controlados (ej: JSON mal formado en el body)
-// app.use(( error, req, res, next ) => {
-//     if ( error.type === 'entity.parse.failed' ) {
-//         return res.status( 400 ).json({ msg: 'El cuerpo de la petición no es un JSON válido' });
-//     }
+ app.use(( error, req, res, next ) => {
+     if ( error.type === 'entity.parse.failed' ) {
+         return res.status( 400 ).json({ msg: 'El cuerpo de la petición no es un JSON válido' });
+     }
 
-//     console.error( error );
-//     res.status( 500 ).json({ msg: 'Error interno del servidor' });
-// });
+     console.error( error );
+     res.status( 500 ).json({ msg: 'Error interno del servidor' });
+ });
 
 app.listen( port, () => {
     console.log( `Servidor corriendo en http://localhost:${ port }` );

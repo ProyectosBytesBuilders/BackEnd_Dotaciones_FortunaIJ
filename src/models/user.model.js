@@ -1,5 +1,6 @@
 import { Schema, model } from 'mongoose';
 import { ROLES, ROLES_LIST } from '../constants/roles.js';
+import { Document_Type } from '../constants/DocumentType.js';
 
 // Formato de correo: usuario@dominio.ext
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -13,6 +14,35 @@ const UserSchema = new Schema(
             minlength: [ 3, 'El nombre debe tener al menos 3 caracteres' ],
             maxlength: [ 50, 'El nombre no puede exceder los 50 caracteres' ]
         },
+
+        LastName: {
+            type : String,
+            trim: true, 
+            minlength: [ 3, 'El apellido debe tener al menos 3 caracteres' ],
+            maxlength: [ 50, 'El apellido no puede exceder los 50 caracteres' ]
+        },
+
+
+        DocumentType:{
+            type: String, 
+            required: true,
+                trim: true, 
+                enum: {
+                    values: Document_Type,
+                    message: 'heyyy'
+                    //message: `El documento ${VALUE} no es valido, deber ser ${Document_Type.join(', ')}`
+                }
+
+        },
+
+        DocumentNumber:{
+            type: Number,
+            trim: true,
+            unique: true, 
+            required: true,
+            minlength: [ 3, 'El documento debe tener al menos 3 caracteres' ]
+        },
+
         email: {
             type: String,
             required: [ true, 'El correo electrónico es obligatorio' ],
@@ -28,6 +58,7 @@ const UserSchema = new Schema(
             required: [ true, 'La contraseña es obligatoria' ],
             select: false
         },
+        
         role: {
             type: String,
             enum: {

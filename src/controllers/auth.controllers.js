@@ -10,17 +10,19 @@ const buildPayload = ( user ) => ({
     _id: user._id,
     name: user.name,
     email: user.email,
-    role: user.role
+    role: user.role,
+    tipo_Documento: user.DocumentType, 
+    Numero_Documento: user.DocumentNumber
 });
 
 // POST /api/auth/register  -> Registro público: SIEMPRE crea un CLIENTE
 const registerUser = async ( req, res ) => {
     try {
         // Se toman solo estos 3 campos: así nadie puede enviar role, status o createdBy
-        const { name, email, password } = req.body ?? {};
+        const { name, email, password, DocumentType, DocumentNumber } = req.body ?? {};
 
-        if ( ! name || ! email || ! password ) {
-            return res.status( 400 ).json({ msg: 'Los campos name, email y password son obligatorios' });
+        if ( ! name || ! email || ! password || !DocumentType || !DocumentNumber ) {
+            return res.status( 400 ).json({ msg: 'Los campos name, tipo_Documento, Numero_Documento, email y password son obligatorios' });
         }
 
         // Evita inyección NoSQL (ej: "email": { "$ne": null })
@@ -68,13 +70,26 @@ const loginUser = async ( req, res ) => {
     try {
         const { email, password } = req.body ?? {};
 
-        if ( ! email || ! password ) {
-            return res.status( 400 ).json({ msg: 'Los campos email y password son obligatorios' });
+        // Object.entries({ email, password }) ---> { email, password }  ---> [ [ 'email', 'password' ], [ 'loquesea@correo.co', '12334566' ] ]
+        for ( const [ field, value ] of Object.entries({ email, password }) ) {
+            console.log( field, '->', value, '| tipo:', typeof value );
+
+            if ( value === undefined || value === null || value === '' ) {
+                return res.status( 400 ).json({ msg: `El campo ${ field } es obligatorio` });
+            }
+
+            if ( typeof value !== 'string' ) {
+                return res.status( 400 ).json({ msg: `El campo ${ field } debe ser texto` });
+            }
         }
 
-        if ( typeof email !== 'string' || typeof password !== 'string' ) {
-            return res.status( 400 ).json({ msg: 'Los campos email y password deben ser texto' });
-        }
+        // if ( ! email || ! password ) {
+        //     return res.status( 400 ).json({ msg: 'Los campos email y password son obligatorios' });
+        // }
+
+        // if ( typeof email !== 'string' || typeof password !== 'string' ) {
+        //     return res.status( 400 ).json({ msg: 'Los campos email y password deben ser texto' });
+        // }
 
         const userFound = await dbGetUserByEmail( email.trim().toLowerCase(), { withPassword: true } );
 
