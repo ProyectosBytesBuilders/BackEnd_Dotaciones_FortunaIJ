@@ -1,0 +1,6 @@
+name: local
+variables:
+  - name: baseUrl
+    value: http://localhost:3000
+  - name: pqrsId
+    value: REEMPLAZAR_CON_ID_DE_MONGODB

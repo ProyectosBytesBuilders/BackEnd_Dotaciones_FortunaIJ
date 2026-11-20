@@ -1,0 +1,29 @@
+info:
+  name: Crear PQRS
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/pqrs"
+  headers:
+    - name: Content-Type
+      value: application/json
+    - name: Accept
+      value: application/json
+  body:
+    type: json
+    data: |
+      {
+        "tipo": "peticion",
+        "descripcion": "Solicito informacion sobre el estado de mi pedido de dotaciones.",
+        "archivo_adjunto": null,
+        "anonimo": false,
+        "id_cliente": 1
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

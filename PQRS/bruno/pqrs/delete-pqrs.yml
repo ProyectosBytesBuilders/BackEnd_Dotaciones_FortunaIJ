@@ -1,0 +1,21 @@
+info:
+  name: Eliminar PQRS
+  type: http
+  seq: 6
+
+http:
+  method: DELETE
+  url: "{{baseUrl}}/api/pqrs/:id"
+  headers:
+    - name: Accept
+      value: application/json
+  params:
+    - name: id
+      value: "{{pqrsId}}"
+      type: path
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

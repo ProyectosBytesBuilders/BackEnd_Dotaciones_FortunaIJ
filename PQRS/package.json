@@ -1,0 +1,23 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "Rest API para Sena Store",
+  "keywords": [
+    "node",
+    "express",
+    "multer",
+    "mongoose",
+    "bcrypt",
+    "jwt"
+  ],
+  "author": "Juan Carlos Jiménez Gutiérrez <jangojes.dev@gmail.com>",
+  "license": "ISC",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch src/index.js"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
