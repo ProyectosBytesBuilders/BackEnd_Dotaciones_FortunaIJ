@@ -8,7 +8,8 @@
   "scripts": {
     "dev": "node --env-file .env --watch src/index.js",
     "start": "node --env-file .env src/index.js",
-    "seed:gerente": "node --env-file .env src/scripts/seed-gerente.js"
+    "seed:gerente": "node --env-file .env src/scripts/seed-gerente.js",
+    "seed:productos": "node --env-file .env src/scripts/seed-productos-prueba.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",

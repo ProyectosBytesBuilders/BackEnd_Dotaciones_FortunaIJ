@@ -1,0 +1,34 @@
+meta {
+  name: Crear Pedido
+  type: http
+  seq: 5
+}
+
+post {
+  url: http://localhost:3000/api/orders
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "shippingAddress": {
+      "receiverName": "Samuel Perez",
+      "phone": "3001234567",
+      "address": "Calle 10 # 20-30",
+      "city": "Bogotá",
+      "department": "Cundinamarca",
+      "details": "Apto 301"
+    },
+    "notes": "Entregar en horario de oficina"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

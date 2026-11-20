@@ -1,0 +1,20 @@
+meta {
+  name: Ver Carrito
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://localhost:3000/api/cart
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -3,6 +3,8 @@ import cors from 'cors';
 
 import conexion from './config/mongo.config.js';
 import authRoute from './routes/auth.routes.js';
+import cartRoute from './routes/cart.routes.js';
+import ordersRoute from './routes/orders.routes.js';
 
 // Sin secreto no se pueden firmar tokens: mejor detenerse que arrancar inseguro
 if ( ! process.env.JWT_SECRET ) {
@@ -27,10 +29,11 @@ app.get( '/health', ( req, res ) => {
 
 // ── Rutas ──
 app.use( '/api/auth', authRoute );
+app.use( '/api/cart', cartRoute );          // Gestión de Pedidos: carrito
+app.use( '/api/orders', ordersRoute );      // Gestión de Pedidos: pedidos
 // Cada integrante agrega aquí las rutas de su módulo, en su rama:
 // app.use( '/api/users', usersRoute );          // Gestión de Usuarios
 // app.use( '/api/products', productsRoute );    // Administración de Inventario
-// app.use( '/api/orders', ordersRoute );        // Gestión de Pedidos
 // app.use( '/api/pqrs', pqrsRoute );            // Gestión de PQRS
 
 // Ruta no encontrada

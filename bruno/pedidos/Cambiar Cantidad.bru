@@ -1,0 +1,26 @@
+meta {
+  name: Cambiar Cantidad
+  type: http
+  seq: 3
+}
+
+patch {
+  url: http://localhost:3000/api/cart/items/PEGA_ID
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "quantity": 3
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
