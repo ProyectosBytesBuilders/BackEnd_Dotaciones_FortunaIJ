@@ -24,6 +24,8 @@ const handleError = ( error, res, fallbackMsg ) => {
     return res.status( 500 ).json({ msg: fallbackMsg });
 }
 
+const MAX_TEXT = 300;
+
 // Solo se aceptan estos campos del body (así nadie envía total, status, user, etc.)
 const pickShippingAddress = ( body = {} ) => {
     const { receiverName, phone, address, city, department, details } = body;
@@ -105,8 +107,8 @@ const getOrderById = async ( req, res ) => {
 
         if ( ! order ) return res.status( 404 ).json({ msg: 'Pedido no encontrado' });
 
-        // order.user viene populado: se compara contra su _id
-        if ( ! canAccessResource( req.userFound, order.user._id, STAFF_ROLES ) ) {
+        // order.user viene populado: se compara contra su _id (si el usuario ya no existiera, queda el id guardado)
+        if ( ! canAccessResource( req.userFound, order.user?._id ?? order.user, STAFF_ROLES ) ) {
             return res.status( 403 ).json({ msg: 'No tienes permiso sobre este pedido' });
         }
 
@@ -132,6 +134,10 @@ const changeStatus = async ( req, res ) => {
 
         if ( [ note, carrier, trackingNumber ].some( v => v !== undefined && typeof v !== 'string' ) ) {
             return res.status( 400 ).json({ msg: 'note, carrier y trackingNumber deben ser texto' });
+        }
+
+        if ( [ note, carrier, trackingNumber ].some( v => v !== undefined && v.length > MAX_TEXT ) ) {
+            return res.status( 400 ).json({ msg: `note, carrier y trackingNumber no pueden exceder ${ MAX_TEXT } caracteres` });
         }
 
         // Reglas según el estado destino
@@ -169,10 +175,14 @@ const cancelMyOrder = async ( req, res ) => {
             return res.status( 400 ).json({ msg: 'El motivo de la cancelación (reason) es obligatorio' });
         }
 
+        if ( reason.length > MAX_TEXT ) {
+            return res.status( 400 ).json({ msg: `reason no puede exceder ${ MAX_TEXT } caracteres` });
+        }
+
         const order = await dbGetOrderById( id );
 
         // Mismo mensaje si no existe o no es suyo: no se revela qué pedidos existen
-        if ( ! order || String( order.user._id ) !== String( req.userFound._id ) ) {
+        if ( ! order || String( order.user?._id ?? order.user ) !== String( req.userFound._id ) ) {
             return res.status( 404 ).json({ msg: 'Pedido no encontrado' });
         }
 
@@ -180,7 +190,10 @@ const cancelMyOrder = async ( req, res ) => {
             return res.status( 400 ).json({ msg: 'Solo puedes cancelar pedidos PENDIENTES. Comunícate con la empresa (PQRS)' });
         }
 
-        const cancelled = await dbChangeOrderStatus( id, ORDER_STATUS.CANCELADO, req.userFound._id, { note: reason.trim() } );
+        const cancelled = await dbChangeOrderStatus( id, ORDER_STATUS.CANCELADO, req.userFound._id, {
+            note: reason.trim(),
+            onlyFrom: ORDER_STATUS.PENDIENTE      // Si el personal lo confirmó justo ahora, ya no se cancela
+        });
 
         return res.json({ msg: 'Pedido cancelado', data: cancelled });
     }

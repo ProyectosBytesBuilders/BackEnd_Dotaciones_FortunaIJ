@@ -4,11 +4,17 @@ import HttpError from '../helpers/http-error.helper.js';
 
 // Devuelve el carrito del usuario (lo crea vacío si no existe)
 const dbGetOrCreateCart = async ( userId ) => {
-    return await CartModel.findOneAndUpdate(
-        { user: userId },
-        { $setOnInsert: { user: userId, items: [] } },
-        { upsert: true, returnDocument: 'after' }
-    );
+    const cart = await CartModel.findOne({ user: userId });
+    if ( cart ) return cart;
+
+    try {
+        return await CartModel.create({ user: userId, items: [] });
+    }
+    catch ( error ) {
+        // Dos peticiones simultáneas intentaron crearlo: el índice único frena a la segunda, se usa el que ya existe
+        if ( error.code === 11000 ) return await CartModel.findOne({ user: userId });
+        throw error;
+    }
 }
 
 // Carrito listo para mostrar: con nombre y precio actuales y los totales calculados

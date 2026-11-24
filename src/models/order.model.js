@@ -32,7 +32,7 @@ const StatusHistorySchema = new Schema(
     {
         status:    { type: String, enum: ORDER_STATUS_LIST, required: true },
         changedBy: { type: Schema.Types.ObjectId, ref: 'user', required: true },
-        note:      { type: String, trim: true, default: '' },
+        note:      { type: String, trim: true, maxlength: 300, default: '' },
         date:      { type: Date, default: Date.now }
     },
     { _id: false }
@@ -60,14 +60,14 @@ const OrderSchema = new Schema(
 
         // Se llenan al pasar a ENVIADO
         shipping: {
-            carrier:        { type: String, trim: true },       // Transportadora
-            trackingNumber: { type: String, trim: true },       // Número de guía
+            carrier:        { type: String, trim: true, maxlength: 60 },       // Transportadora
+            trackingNumber: { type: String, trim: true, maxlength: 60 },       // Número de guía
             shippedAt:      { type: Date }
         },
         deliveredAt:  { type: Date },
 
         // Se llenan al CANCELAR
-        cancelReason: { type: String, trim: true },
+        cancelReason: { type: String, trim: true, maxlength: 300 },
         cancelledAt:  { type: Date }
     },
     { timestamps: true, versionKey: false }

@@ -13,10 +13,16 @@ const generateOrderNumber = () => {
     return `PED-${ date }-${ code }`;
 }
 
-// Devuelve al inventario las unidades [{ product, quantity }]
-const restoreStock = async ( items ) => {
+// Devuelve al inventario las unidades [{ product, quantity }].
+// Si una falla, se registra y se sigue con las demás: así una sola falla no deja el resto sin devolver.
+const restoreStock = async ( items, orderNumber = '' ) => {
     for ( const item of items ) {
-        await ProductModel.updateOne({ _id: item.product }, { $inc: { stock: item.quantity } });
+        try {
+            await ProductModel.updateOne({ _id: item.product }, { $inc: { stock: item.quantity } });
+        }
+        catch ( error ) {
+            console.error( `No se pudo devolver el stock (pedido ${ orderNumber }, producto ${ item.product }, cantidad ${ item.quantity })`, error );
+        }
     }
 }
 
@@ -61,16 +67,27 @@ const dbCreateOrderFromCart = async ( user, { shippingAddress, notes } ) => {
             reserved.push( item );
         }
 
-        // 3. Crear el pedido
-        const order = await OrderModel.create({
-            orderNumber: generateOrderNumber(),
-            user: user._id,
-            items: orderItems,
-            shippingAddress,
-            notes,
-            total: orderItems.reduce( ( sum, item ) => sum + item.subtotal, 0 ),
-            statusHistory: [{ status: ORDER_STATUS.PENDIENTE, changedBy: user._id, note: 'Pedido creado' }]
-        });
+        // 3. Crear el pedido (si el número generado ya existe, que es casi imposible, se reintenta)
+        let order;
+
+        for ( let attempt = 1; attempt <= 3; attempt++ ) {
+            try {
+                order = await OrderModel.create({
+                    orderNumber: generateOrderNumber(),
+                    user: user._id,
+                    items: orderItems,
+                    shippingAddress,
+                    notes,
+                    total: orderItems.reduce( ( sum, item ) => sum + item.subtotal, 0 ),
+                    statusHistory: [{ status: ORDER_STATUS.PENDIENTE, changedBy: user._id, note: 'Pedido creado' }]
+                });
+                break;
+            }
+            catch ( error ) {
+                const isDuplicateNumber = error.code === 11000 && error.keyPattern?.orderNumber;
+                if ( ! isDuplicateNumber || attempt === 3 ) throw error;
+            }
+        }
 
         // 4. Vaciar el carrito (ya es un pedido)
         await CartModel.updateOne({ user: user._id }, { $set: { items: [] } });
@@ -79,7 +96,7 @@ const dbCreateOrderFromCart = async ( user, { shippingAddress, notes } ) => {
     }
     catch ( error ) {
         // Si algo falló, lo descontado vuelve al inventario
-        await restoreStock( reserved );
+        await restoreStock( reserved, '(checkout fallido)' );
         throw error;
     }
 }
@@ -115,6 +132,12 @@ const dbChangeOrderStatus = async ( orderId, newStatus, changedBy, extra = {} ) 
     const order = await OrderModel.findById( orderId );
 
     if ( ! order ) throw new HttpError( 404, 'Pedido no encontrado' );
+
+    // Opcional: exigir que el pedido siga en un estado concreto (lo usa el cliente al cancelar,
+    // para no cancelar un pedido que el personal acaba de confirmar)
+    if ( extra.onlyFrom && order.status !== extra.onlyFrom ) {
+        throw new HttpError( 409, `El pedido ya no está ${ extra.onlyFrom }, ahora está ${ order.status }` );
+    }
 
     const allowed = ORDER_TRANSITIONS[ order.status ];
 
@@ -156,7 +179,7 @@ const dbChangeOrderStatus = async ( orderId, newStatus, changedBy, extra = {} ) 
     if ( ! updated ) throw new HttpError( 409, 'El pedido cambió de estado mientras lo procesabas. Vuelve a consultarlo' );
 
     // Cancelar devuelve las unidades al inventario
-    if ( newStatus === ORDER_STATUS.CANCELADO ) await restoreStock( updated.items );
+    if ( newStatus === ORDER_STATUS.CANCELADO ) await restoreStock( updated.items, updated.orderNumber );
 
     return updated;
 }
