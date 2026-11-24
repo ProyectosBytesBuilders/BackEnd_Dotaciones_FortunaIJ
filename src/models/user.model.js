@@ -23,20 +23,19 @@ const UserSchema = new Schema(
         },
 
 
-        DocumentType:{
+        documentType:{
             type: String, 
             required: true,
                 trim: true, 
                 enum: {
-                    values: Document_Type,
-                    message: 'heyyy'
-                    //message: `El documento ${VALUE} no es valido, deber ser ${Document_Type.join(', ')}`
+                    values: Document_Type,  
+                message: `El documento {VALUE} no es valido, deber ser ${Document_Type.join(', ')}`
                 }
 
         },
 
-        DocumentNumber:{
-            type: Number,
+        documentNumber:{
+            type: String,
             trim: true,
             unique: true, 
             required: true,
@@ -63,7 +62,7 @@ const UserSchema = new Schema(
             type: String,
             enum: {
                 values: ROLES_LIST,
-                message: `El rol {VALUE} no es válido, debe ser: ${ ROLES_LIST.join( ', ' ) }`
+                message: `El rol {VALUE} no es valido, debe ser: ${ ROLES_LIST.join( ', ' ) }`
             },
             default: ROLES.CLIENTE
         },

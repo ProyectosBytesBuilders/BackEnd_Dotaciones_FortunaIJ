@@ -1,0 +1,27 @@
+meta {
+  name: Eliminar Usuario
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{baseUrl}}/api/auth/delete
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "id": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2YjA1Yzk3Mjg4MTVkYTZkMWZlZGU1MzAiLCJuYW1lIjoiQnJheWFuIiwiZW1haWwiOiJicmF5YW5AY29ycmVvLmNvIiwicm9sZSI6IkNMSUVOVEUiLCJpYXQiOjE3OTU1NDE3ODgsImV4cCI6MTc5NTU0NTM4OH0.eDqDGEfRSnw_xtKEse0CkBbvaZJL0n478OKwWUimtTI"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+  forwardAuthorizationHeader: false
+}

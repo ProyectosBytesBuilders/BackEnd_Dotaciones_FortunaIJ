@@ -12,7 +12,7 @@ const authorizationMiddleware = ( allowedRoles = [] ) => {
 
         if ( ! allowedRoles.includes( user.role ) ) {
             return res.status( 403 ).json({
-                msg: `El rol ${ user.role } no está autorizado para realizar esta acción`
+                msg: `El rol ${ user.role } no esta autorizado para realizar esta accion`
             });
         }
 

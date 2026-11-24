@@ -23,10 +23,10 @@ const handleMongooseError = ( error ) => {
         };
     }
 
-    // 3. Id con formato inválido
+    // 3. Id con formato invalido
     if ( error.name === 'CastError' ) {
         return {
-            [ error.path ]: `El identificador '${ error.value }' no tiene un formato válido de MongoDB`
+            [ error.path ]: `El identificador '${ error.value }' no tiene un formato valido de MongoDB`
         };
     }
 

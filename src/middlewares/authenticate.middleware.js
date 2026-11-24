@@ -17,7 +17,7 @@ const authMiddleware = async ( req, res, next ) => {
         const payload = validateToken( token );
 
         if ( ! payload ) {
-            return res.status( 401 ).json({ msg: 'Token inválido o expirado' });
+            return res.status( 401 ).json({ msg: 'Token invalido o expirado' });
         }
 
         // Paso 3: Confirmar que el usuario siga existiendo y activo

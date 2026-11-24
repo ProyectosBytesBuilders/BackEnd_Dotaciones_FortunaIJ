@@ -5,6 +5,10 @@ const dbCreateUser = async ( newUser ) => {
     return await UserModel.create( newUser );
 }
 
+const dbDeleteUserById = async(id) => {
+    return await User.findByIdAndDelete(id);
+}
+
 // Buscar por correo. withPassword: true solo para el login (necesita el hash para comparar).
 const dbGetUserByEmail = async ( email, { status = true, withPassword = false } = {} ) => {
     const query = UserModel.findOne({ email, status });
@@ -22,5 +26,6 @@ const dbGetUserById = async ( id, status = true ) => {
 export {
     dbCreateUser,
     dbGetUserByEmail,
-    dbGetUserById
+    dbGetUserById,
+    dbDeleteUserById
 }
